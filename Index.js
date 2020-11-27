@@ -49,6 +49,43 @@ class card {
         name: 'school'
       }
     ]);
-    console.log(this);
   }
+  start() {
+    this.next();
+  }
+  end() {
+    console.log('HTML page created!')
+  }
+
+  // employee questions
+  next() {
+    this.promptRole().then((role) => {
+      if (role === 'Exit') {
+        this.generateHtml();
+        this.end();
+      } else {
+        this.promptInfo(role).then((data) => {
+          switch (role) {
+            case 'Manager':
+              this.employees.push(new Manager(data.name, data.id, data.email, data.officeNumber));
+              break;
+            case 'Engineer':
+              this.employees.push(new Engineer(data.name, data.id, data.email, data.github));
+              break;
+            case "Intern":
+              this.employees.push(new Intern(data.name, data.id, data.email, data.school));
+              break;
+          }
+          this.next();
+        });
+      }
+    });
+  }
+
+
+
+
+
+
+
 }
