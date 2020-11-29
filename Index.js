@@ -5,11 +5,45 @@ const fs = require('fs');
 const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
-const html = require('./template/html');
+const generatePage = require('./utils/generatePage');
 
+const questions = [
+  {
+    type: 'input',
+    message: "What is employee's name?",
+    name: 'name'
+  },
+  {
+    type: 'input',
+    message: "What is employee's ID Number?",
+    name: 'id'
+  },
+  {
+    type: 'input',
+    message: "What is employee's email?",
+    name: 'email'
+  }
+];
 
+function writeToFile(fileName, data) {
+  fs.writeFile(fileName, data, err => {
+    if (err) {
+      return console.log(err);
+    }
+    console.log("Your team profile has been generated!")
+  });
+}
 
+// function to initialize program
+function init() {
+  inquirer.prompt(questions).then(answers => {
+    const response = generatePage(answers);
+    writeToFile("./index.html", response);
+  })
+}
 
+// function call to initialize program
+init();
 
 
 
