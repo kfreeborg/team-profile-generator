@@ -1,4 +1,4 @@
-function generatePage(data) {
+function generatePage(employee) {
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -25,12 +25,16 @@ function generatePage(data) {
   <div class="card m-3" style="width: 15rem;">
   <div class="card-body border border-dark">
   <div class="bg-warning text-dark">
-  <h5 class="card-title">${data.name}</h5>
-  <h6 class="card-subtitle mb-2">${data.title}</h6>
+  <h5 class="card-title">${employee
+      .name}</h5>
+  <h6 class="card-subtitle mb-2">${employee
+      .title}</h6>
   </div>
-  <p class="card-text">ID: ${data.id}</p>
+  <p class="card-text">ID: ${employee
+      .id}</p>
   <p class="card-text">Office Number, Github(link), School</p>
-  <p class="card-text">Email: ${data.email}</p>
+  <p class="card-text">Email: ${employee
+      .email}</p>
   </div>
   </div>
   </div>

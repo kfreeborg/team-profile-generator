@@ -11,13 +11,13 @@ const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
 const generatePage = require('./utils/generatePage.js');
 
-const run = async () => {
+function runEmployee() {
   const questions = [
     {
-      type: "list",
+      type: 'list',
       message: "Choose employee's role.",
-      name: "role",
-      choices: ["Manager", "Engineer", "Intern", "Exit"]
+      name: 'role',
+      choices: ['Manager', 'Engineer', 'Intern', 'Exit']
     },
     {
       type: 'input',
@@ -36,110 +36,161 @@ const run = async () => {
     }
   ];
 
-  const { role, name, id, email } = await inquirer.prompt(questions);
-  await fs.writeFile(role, name, id, email);
+  return inquirer.prompt(questions);
+};
 
-  while (true) {
-    const { repeat } = await inquirer.prompt([{ name: 'repeat', message: 'Would you like to add another team member?' }]);
-    if (!repeat) {
-      break;
-    }
+function runManager() {
+  const questions = [{
+    type: 'input',
+    message: "What is manager's office number?",
+    name: 'officeNumber'
+  }];
+
+  return inquirer
+    .prompt(questions);
+};
+
+function runEngineer() {
+  const questions = [{
+    type: 'input',
+    message: "What is Engineer's Github?",
+    name: 'Github'
+  }];
+
+  return inquirer
+    .prompt(questions);
+};
+
+function runIntern() {
+  const questions = [{
+    type: 'input',
+    message: "What school does intern attend?",
+    name: 'school'
+  }];
+
+  return inquirer
+    .prompt(questions);
+};
+
+async function run() {
+
+  let employeeArray = [];
+  const maxTimes = 4;
+  for (i = 0; i < maxTimes; i++) {
+    const promise = new Promise((resolve, reject) => {
+      runEmployee()
+        .then(function ({ name, id, email, role }) {
+
+          if (role === "Manager") {
+            runManager().then(function ({ officeNumber }) {
+              this.employee = new Manager(name, id, email, officeNumber, role);
+              console.log(officeNumber);
+              employeeArray.push(employee);
+              resolve("done");
+            });
+
+          } else if (role === "Engineer") {
+            runEngineer().then(function ({ Github }) {
+              this.employee = new Engineer(name, id, email, Github, role);
+              console.log(Github);
+              employeeArray.push(employee);
+              resolve("done");
+            });
+          } else if (role === "Intern") {
+            runIntern().then(function ({ school }) {
+              this.employee = new Intern(name, id, email, school, role);
+              console.log(school);
+              employeeArray.push(employee);
+              resolve("done");
+            });
+          }
+
+        }).catch(function (err) {
+          console.log("There was an error.");
+          console.error(err);
+        });
+    });
+
+    const result = await promise;
+    console.log(result);
   }
 
+  // console.log(employeeArray.length);
+
+  function displayTitle(employee) {
+    if (employee.title === "Manager") {
+      console.log(employee.officeNumber);
+      return `office number: ${employee.officeNumber}`;
+    }
+
+    if (employee.title === "Intern") {
+      return `school: ${employee.school}`;
+    }
+
+    if (employee.title === "Engineer") {
+      return `GitHub: ${employee.Github}`;
+    }
+
+  }
+  function getCardHtml() {
+    let html = "";
+    for (j = 0; j < maxTimes; j++) {
+      console.log(employeeArray[j])
+      html += `<div class="card m-3" style="width: 15rem;">
+            <div class="card-body border border-dark">
+              <div class="bg-warning text-dark">
+                <h5 class="card-title">${employeeArray[j].name}</h5>
+                <h6 class="card-subtitle mb-2">${employeeArray[j].title}</h6>
+              </div>
+              <p class="card-text">ID: ${employeeArray[j].id}</p>
+              <p class="card-text">${displayTitle(employeeArray[j])}</p>
+              <p class="card-text">Email: ${employeeArray[j].email}</p>
+            </div>
+          </div> `;
+    }
+    return html;
+  }
+
+  let html = `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Profile</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+    integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-light bg-dark">
+      <span class="mb-0 text-light h1 mx-auto">Meet the Team</span>
+    </nav>
+  </header>
+  <main>
+    <div class="container-fluid">
+      <div class="row">
+        ${getCardHtml()}
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+    
+</html>
+    `;
+
+
+
+
+  console.log(html);
+  const fs = require("fs");
+  fs.writeFile('index.html', html, function (err) {
+    if (err) throw err;
+    console.log('File is created successfully.');
+  });
 }
+
+
 run();
-
-
-
-
-
-
-
-// let employees = [];
-
-// async function addRole(role) {
-//   let { name } = await inquirer.prompt(questions.item(role, "name", "full name"));
-//   let { id } = await inquirer.prompt(questions.item(role, "id", "ID number"));
-//   let { email } = await inquirer.prompt(questions.item(role, "email", "email address"));
-//   switch (role) {
-//     case "Manager":
-//       let { officeNumber } = await inquirer.prompt(questions.item(role, "officeNumber", "office phone number"));
-//       employees.push(new Manager(name, id, email, officeNumber));
-//       break;
-//     case "Engineer":
-//       let { Github } = await inquirer.prompt(questions.item(role, "github", "GitHub username"));
-//       employees.push(new Engineer(name, id, email, Github));
-//       break;
-//     case "Intern":
-//       let { school } = await inquirer.prompt(questions.item(role, "school", "school"));
-//       employees.push(new Intern(name, id, email, school));
-//       break;
-//   }
-// }
-
-// function getHtml(file) {
-//   return readFile(file, "utf8");
-// }
-
-// async function generateHtml() {
-//   let Template = {
-//     Main: await getHtml("./templates/main.html"),
-//     Manager: await getHtml("./templates/manager.html"),
-//     Engineer: await getHtml("./templates/engineer.html"),
-//     Intern: await getHtml("./templates/intern.html")
-//   }
-
-//   let employeesHTML = "";
-
-//   for (let employee of employees) {
-//     let html = Template[employee.constructor.name]
-//       .replace(/{% name %}/gi, employee.name)
-//       .replace(/{% id %}/gi, employee.id)
-//       .replace(/{% email %}/gi, employee.email);
-//     switch (employee.constructor.name) {
-//       case "Manager":
-//         html = html.replace(/{% officeNumber %}/gi, employee.officeNumber);
-//         break;
-//       case "Engineer":
-//         html = html.replace(/{% github %}/gi, employee.github);
-//         break;
-//       case "Intern":
-//         html = html.replace(/{% school %}/gi, employee.school);
-//         break;
-//     }
-//     employeesHTML += html;
-//   }
-//   let completeHTML = Template["Main"].replace(/{% employees %}/gi, employeesHTML);
-
-//   createHTML(completeHTML);
-// }
-
-// async function createHTML(html) {
-//   console.log("Creating HTML...");
-//   let file = `team-${timestamp()}.html`;
-//   let dir = "./output";
-//   if (!fs.existsSync(dir)) {
-//     fs.mkdirSync(dir);
-//   }
-//   await writeFile(`${dir}/${file}`, html);
-//   console.log(`HTML has been created to "${dir}/${file}".`);
-//   return;
-// }
-
-// async function init() {
-//   console.log("Please build your team");
-//   await addRole("Manager");
-//   let role = "";
-//   let exit = "I don't want to add anymore team roles";
-//   while (role != exit) {
-//     let { role } = await inquirer.prompt(questions.type());
-//     if (role === exit) {
-//       return generateHtml();
-//     }
-//     await addRole(role);
-//   }
-// }
-
-// init();
-
-
