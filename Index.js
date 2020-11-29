@@ -67,7 +67,6 @@ function runIntern() {
     .prompt(questions);
 };
 
-
 async function run() {
 
   // const teamArray = 4;
@@ -105,7 +104,7 @@ async function run() {
     }
 
     if (employee.title === "Engineer") {
-      return `GitHub: <a href="https://github.com/${employee.Github}">${employee.Github}</a>`;
+      return `GitHub: <a href="https://github.com/${employee.Github}" target="_blank">${employee.Github}</a>`;
     }
   }
 
