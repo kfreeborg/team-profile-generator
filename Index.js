@@ -16,17 +16,17 @@ function runEmployee() {
     },
     {
       type: 'input',
-      message: "What is employee's name?",
+      message: "What is employee's name? (If exiting, click Enter.)",
       name: 'name'
     },
     {
       type: 'input',
-      message: "What is employee's ID Number?",
+      message: "What is employee's ID Number? (If exiting, click Enter.)",
       name: 'id'
     },
     {
       type: 'input',
-      message: "What is employee's email?",
+      message: "What is employee's email? (If exiting, click Enter.)",
       name: 'email'
     }
   ];
@@ -97,15 +97,15 @@ async function run() {
 
   function displayTitle(employee) {
     if (employee.title === "Manager") {
-      return `office number: ${employee.officeNumber}`;
+      return `Office Number: ${employee.officeNumber}`;
     }
 
     if (employee.title === "Intern") {
-      return `school: ${employee.school}`;
+      return `School: ${employee.school}`;
     }
 
     if (employee.title === "Engineer") {
-      return `GitHub: ${employee.Github}`;
+      return `GitHub: <a href="https://github.com/${employee.Github}">${employee.Github}</a>`;
     }
   }
 
@@ -116,12 +116,12 @@ async function run() {
     <div class="card m-3" style="width: 15rem;">
       <div class="card-body border border-dark">
         <div class="bg-warning text-dark">
-          <h5 class="card-title">${teamArray[j].name}</h5>
-          <h6 class="card-subtitle mb-2">${teamArray[j].title}</h6>
+          <h5 class="card-title p-2">${teamArray[j].name}</h5>
+          <h6 class="card-subtitle p-2 mb-2">${teamArray[j].title}</h6>
         </div>
-        <p class="card-text">ID: ${teamArray[j].id}</p>
-        <p class="card-text">${displayTitle(teamArray[j])}</p>
-        <p class="card-text">Email: ${teamArray[j].email}</p>
+        <p class="card-text p-2">ID: ${teamArray[j].id}</p>
+        <p class="card-text p-2">${displayTitle(teamArray[j])}</p>
+        <p class="card-text p-2">Email: <a href="mailto:${teamArray[j].email}">${teamArray[j].email}</a></p>
       </div>
     </div> 
     `;
