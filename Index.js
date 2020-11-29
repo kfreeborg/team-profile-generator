@@ -1,15 +1,10 @@
 const inquirer = require('inquirer');
 const fs = require('fs/promises');
-// const util = require('util');
-
-// const readFile = util.promisify(fs.readFile);
-// const writeFile = util.promisify(fs.writeFile);
-
-//const Employee = require('./lib/Employee')
 const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
-const generatePage = require('./utils/generatePage.js');
+
+let teamArray = [];
 
 function runEmployee() {
   const questions = [
@@ -72,54 +67,36 @@ function runIntern() {
     .prompt(questions);
 };
 
+
 async function run() {
 
-  let employeeArray = [];
-  const maxTimes = 4;
-  for (i = 0; i < maxTimes; i++) {
-    const promise = new Promise((resolve, reject) => {
-      runEmployee()
-        .then(function ({ name, id, email, role }) {
+  // const teamArray = 4;
+  let running = true;
 
-          if (role === "Manager") {
-            runManager().then(function ({ officeNumber }) {
-              this.employee = new Manager(name, id, email, officeNumber, role);
-              console.log(officeNumber);
-              employeeArray.push(employee);
-              resolve("done");
-            });
+  while (running) {
+    const { name, id, email, role } = await runEmployee()
 
-          } else if (role === "Engineer") {
-            runEngineer().then(function ({ Github }) {
-              this.employee = new Engineer(name, id, email, Github, role);
-              console.log(Github);
-              employeeArray.push(employee);
-              resolve("done");
-            });
-          } else if (role === "Intern") {
-            runIntern().then(function ({ school }) {
-              this.employee = new Intern(name, id, email, school, role);
-              console.log(school);
-              employeeArray.push(employee);
-              resolve("done");
-            });
-          }
+    if (role === "Manager") {
+      const { officeNumber } = await runManager()
+      const employee = new Manager(name, id, email, officeNumber, role);
+      teamArray.push(employee);
 
-        }).catch(function (err) {
-          console.log("There was an error.");
-          console.error(err);
-        });
-    });
+    } else if (role === "Engineer") {
+      const { Github } = await runEngineer()
+      const employee = new Engineer(name, id, email, Github, role);
+      teamArray.push(employee);
 
-    const result = await promise;
-    console.log(result);
+    } else if (role === "Intern") {
+      const { school } = await runIntern()
+      const employee = new Intern(name, id, email, school, role);
+      teamArray.push(employee);
+    } else {
+      running = false;
+    }
   }
-
-  // console.log(employeeArray.length);
 
   function displayTitle(employee) {
     if (employee.title === "Manager") {
-      console.log(employee.officeNumber);
       return `office number: ${employee.officeNumber}`;
     }
 
@@ -130,23 +107,24 @@ async function run() {
     if (employee.title === "Engineer") {
       return `GitHub: ${employee.Github}`;
     }
-
   }
-  function getCardHtml() {
+
+  function writeCard() {
     let html = "";
-    for (j = 0; j < maxTimes; j++) {
-      console.log(employeeArray[j])
-      html += `<div class="card m-3" style="width: 15rem;">
-            <div class="card-body border border-dark">
-              <div class="bg-warning text-dark">
-                <h5 class="card-title">${employeeArray[j].name}</h5>
-                <h6 class="card-subtitle mb-2">${employeeArray[j].title}</h6>
-              </div>
-              <p class="card-text">ID: ${employeeArray[j].id}</p>
-              <p class="card-text">${displayTitle(employeeArray[j])}</p>
-              <p class="card-text">Email: ${employeeArray[j].email}</p>
-            </div>
-          </div> `;
+    for (j = 0; j < teamArray.length; j++) {
+      html += `
+    <div class="card m-3" style="width: 15rem;">
+      <div class="card-body border border-dark">
+        <div class="bg-warning text-dark">
+          <h5 class="card-title">${teamArray[j].name}</h5>
+          <h6 class="card-subtitle mb-2">${teamArray[j].title}</h6>
+        </div>
+        <p class="card-text">ID: ${teamArray[j].id}</p>
+        <p class="card-text">${displayTitle(teamArray[j])}</p>
+        <p class="card-text">Email: ${teamArray[j].email}</p>
+      </div>
+    </div> 
+    `;
     }
     return html;
   }
@@ -169,28 +147,21 @@ async function run() {
     </nav>
   </header>
   <main>
-    <div class="container-fluid">
+    <div class="container">
       <div class="row">
-        ${getCardHtml()}
-        </div>
+        ${writeCard()}
       </div>
     </div>
   </main>
-</body>
-    
+</body>  
 </html>
-    `;
+`;
 
-
-
-
-  console.log(html);
   const fs = require("fs");
   fs.writeFile('index.html', html, function (err) {
     if (err) throw err;
     console.log('File is created successfully.');
   });
-}
-
+};
 
 run();
